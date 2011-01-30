@@ -9,8 +9,12 @@ add_automatic_test (basics)
 add_automatic_test (serialization_regression)
 add_automatic_test (serialization)
 add_automatic_test (json)
+add_automatic_test (sample)
 
-# set (AUTOREFLECT_CMD ${CMAKE_BINARY_DIR}/sfautoreflect/sfautoreflect)
+#
+# Start autoreflect on all files in src_files and put created
+# files into the list gen_files.
+#
 macro (autoreflect_decorate gen_files src_files)
 	set (listcopy ${ARGV})
 	list (REMOVE_AT listcopy 0) # Removing two parameters
@@ -30,6 +34,9 @@ macro (autoreflect_decorate gen_files src_files)
 	endforeach ()
 endmacro(autoreflect_decorate)
 
+# Scans all files in ${files} for the SF_AUTOREFLECT_ macro
+# and automatically run autoreflect on them. Also appends the
+# list with the created files.
 macro (autoreflect_decorate_auto files)
 	set (original ${${files}})
 	foreach (f ${original})
@@ -42,7 +49,7 @@ macro (autoreflect_decorate_auto files)
 endmacro ()
 
 
-
+# Add a (reflected) testcase.
 macro (autoreflect_testcase name)
 	set (src_files ${name}.h ${name}.cpp)
 	autoreflect_decorate_auto (src_files)
@@ -53,9 +60,3 @@ endmacro ()
 
 autoreflect_testcase (reflect_enum)
 autoreflect_testcase (reflect_struct)
-
-# set (src_files todecorate1.cpp)
-# autoreflect_decorate (src_files todecorate1.h)
-# add_executable (todecorate1 ${src_files})
-# add_test (todecorate1 todecorate1)
-# message ("SrcFiles: ${src_files}")

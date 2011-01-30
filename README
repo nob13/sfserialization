@@ -1,0 +1,122 @@
+sfserialization
+===============
+
+Welcome to the sfserialization library and code generator.
+Released unter LGPL (See COPYING file).
+
+The aim of this library is to provide an easy way to serialize and deserialize 
+C++ objects into the JSON-Format. Also, the embedded program "sfautoreflect" 
+can create the markup which is necessary to serialize/deserialize objects 
+automatically by parsing the C++-Header file and integrating seamlessly into
+standard C++ tool chains.
+
+The library is part of the not-yet-released Schneeflocke project, thats why 
+you will find all classes in the sf:: - Namespace.
+
+1. Serialization and Deserialization
+-----------------------------------.
+
+Suppose you want to serialize or deserialize an Object Foo then you may add 
+serialize/deserialize methods for it like this:
+
+#include <sfserialization/Serialization.h>
+#include <sfserialization/Deserialization.h> 
+
+struct Foo {
+	int myInt; 
+	std::string myString; 
+	
+	void serialize (sf::Serialization & s) const {
+		s ("myInt", myInt);
+		s ("myString", myString);
+	}
+	
+	bool deserialize (const sf::Deserialization & d) {
+		bool suc = true;
+		suc = d ("myInt", myInt) && suc;
+		suc = d ("myString", myString) && suc;
+		return suc;
+	}
+};
+
+Afterwards you can serialize/deserialize the object with
+
+  Foo foo;
+  std::cout << sf::toJSON (foo) << std::endl;
+and deserialize it with
+
+  bool success = sf::fromJSON ("{\"myInt\":2, \"myFloat\":3.14159}", foo);
+
+The whole sample can be found in testcases/sample.cpp
+
+
+2. Code Generation
+------------------
+
+sfautoreflect is a code generator and part of this project. I wrote it to automatically
+generate the serialize/deserialize methods for data structures, but it can also create 
+toString/fromString methods for Enums. During the build process some files of the testcases
+get "reflected" by autoreflect, so if you are able to build this project you also
+used sfautoreflect already.
+
+2.1. Generation of Serializer/Deserializer methods
+
+The code generation process works as following:
+* Mark Structures/Classes which shall have a serializer/deserializer functionality with
+  SF_AUTOREFLECT_SD;
+* This SF_AUTOREFLECT_SD - Macro automatically reduces to the method declaration of the serialize
+  / deserialize method
+* Generate the Cpp-File with the method definition using
+  sfautoreflect SOURCE_FILE -o DESTFILE.cpp
+  
+It wil automatically scan the header files for marked classes and creates the serialization code
+for all member variables. 
+
+2.2. Generation of toString/fromString methods for ENUMs
+* Mark Enums with SF_AUTOREFLECT_ENUM (EnumName). Keep care, that you have to put the Macro inside a
+suitable namespace, but not inside a class (because otherwise koenig-lookups don't work).
+* Let autoreflect generate the Cpp-Code like above.
+
+Example:
+
+enum MyEnum { Hello, World };
+
+// Macro will reduce to 
+// const char* toString(MyEnum e); 
+// bool fromString (const char * s, MyEnum & e);
+SF_AUTOREFLECT_ENUM (MyEnum);
+
+std::cout << "ToString: " << toString (Hello) << " " << toString (World) << std::endl; 
+
+2.3. Integrating into build chain:
+In Cmake it is easy to integrate sfautoreflect into the build chain; see the CMakeLists inside
+the testcases folder. It shall be possible for other build systems too.
+
+3. Building & Usage
+-------------------
+sfserialization is build using cmake and depends to boost (for some template checks). 
+It is tested to work on modern GCC and MS Visual Studio installations.
+
+In Unix:
+
+ mkdir Build-Directory
+ cmake ../path/to/source/folder -DCMAKE_INSTALL_PREFIX=/usr/local/
+ make
+ make install # maybe as root
+
+Then you will find the headers in /usr/local/include, the sfautoreflect command in /usr/local/bin
+and a static library in /usr/local/lib.
+
+In order to build a release version, call cmake with the -DBUILD_TYPE=RELEASE parameter.
+
+In Windows:
+You can create Visual Studio Project files using CMake for windows. Don't forget to install
+boost-C++ libraries before that. I recommend the ones from BoostPro (www.boostpro.com/download)
+
+If I accidently broke the windows version let me know, I seldomly develop in Windows.
+
+4. Contact
+------------
+Feel free to contact me if you like the software, have a problem or want to suggest something :)
+
+Norbert Schultz
