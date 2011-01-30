@@ -268,6 +268,10 @@ bool Value::fetch (double & data) const {
 		data = fData;
 		return true;
 	}
+	if (mType == IntType) {
+		data = iData;
+		return true;
+	}
 	return false;
 }
 

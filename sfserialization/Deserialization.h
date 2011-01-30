@@ -245,13 +245,17 @@ template <class T> bool fromJSON (const ByteArrayBase & data, T & dst){
 }
 
 #ifdef __GNUC__
-/// Reads a regualar object value (with fromString method)
+/// Reads a regualar object value (with deserialize method)
 template <typename T>
  typename boost::enable_if_c< hasDeserialize<T>::value, bool>::type deserialize (const json::Value & v, T & obj){
 	json::Object o;
-	if (!v.fetch (o)) return false;
+	if (!v.fetch (o)){
+		return false;
+	}
 	Deserialization d (o);
-	if (d.error()) return false;
+	if (d.error()){
+		return false;
+	}
 	return obj.deserialize (d);
 }
 #endif
