@@ -18,7 +18,7 @@ struct StackElement {
 		Root,		///< Root element
 		Namespace,	///< A namespace block namespace bla { .. }
 		Class,		///< A class/struct block class
-		Function,	///< A function block
+		FunctionDeclaration,	///< A function block
 		Enum,		///< A enum block
 		Code,		///< A code block { .. }
 		Unknown,	///< Unknown block
@@ -158,8 +158,29 @@ struct ClassElement : public StackElement {
 
 };
 
-struct FunctionElement : public StackElement {
-	FunctionElement () : StackElement (Function) {}
+/// A (member-) variable definition
+struct ArgumentDefinition {
+	CppType type;		///< Type of the argument
+	std::string name;	///< Name of the argument (may be empty)
+
+	void serialize (sf::Serialization & s) const {
+		s("type", type);
+		s("name", name);
+	}
+
+};
+
+struct FunctionDeclarationElement : public StackElement {
+	FunctionDeclarationElement () : StackElement (FunctionDeclaration), const_ (false) {}
+	CppType returnType;					///< Also includes if function is static
+	std::vector<ArgumentDefinition> arguments;
+	bool const_;
+	void serialize (sf::Serialization & s) const {
+		StackElement::serialize (s);
+		s ("returnType", returnType);
+		s ("arguments", arguments);
+		s ("const", const_);
+	}
 };
 
 struct EnumElement : public StackElement {

@@ -67,6 +67,12 @@ private:
 	/// Returns true on success
 	static bool matchVariableDefinition (StringVec::const_iterator begin, StringVec::const_iterator end, VariableDefinition * definition);
 
+	/// Tries to match a Argument definition
+	static StringVec::const_iterator matchArgumentDefinition (StringVec::const_iterator begin, StringVec::const_iterator end, bool * result, ArgumentDefinition * definition);
+
+	/// Tries to match a function head
+	static bool matchFunctionDeclaration (StringVec::const_iterator begin, StringVec::const_iterator end, FunctionDeclarationElement * head);
+
 	/// Pushing a structure element
 	void push (StackElement * elem);
 
@@ -78,4 +84,5 @@ public:
 	static bool test_matchTypeName ();
 	static bool test_matchCppType ();
 	static bool test_matchVariableDefinition ();
+	static bool test_matchFunctionDeclaration ();
 };

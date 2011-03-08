@@ -9,7 +9,7 @@ const char * toString (Visibility v) {
 }
 
 const char * toString (StackElement::Type v){
-	const char * values[] =  { "Root", "Namespace", "Class", "Function", "Enum", "Code", "Unknown" };
+	const char * values[] =  { "Root", "Namespace", "Class", "FunctionDeclaration", "Enum", "Code", "Unknown" };
 	const int l = sizeof (values) / sizeof (const char*);
 	int x =(int) v;
 	if (x < 0 || x >= l) return "invalid";
