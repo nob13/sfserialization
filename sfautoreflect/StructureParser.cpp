@@ -273,9 +273,11 @@ const RootElement * StructureParser::root () const {
 				 || (element->type == StackElement::Namespace)){
 				element->children.push_back (declaration);
 			} else {
-				delete element;
-				fprintf (stderr, "Matched a function declaration outside a class/root/namespace element\n");
-				return false;
+				// May happen. Regular functions are similar to be parsed like functions
+				// E.g. int bla () { X x ();} // must not declare x but can also declare an instance of (struct/class) X, called x.
+				// fprintf (stderr, "Matched a function declaration %s outside a class/root/namespace element, parent=%s\n", sf::toJSON (declaration).c_str(), sf::toJSON (*element).c_str());
+				delete declaration;
+				return true;
 			}
 		}
 		return true;
