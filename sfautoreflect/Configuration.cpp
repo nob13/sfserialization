@@ -4,6 +4,7 @@
 #include "generators/EnumGenerator.h"
 #include "generators/DumpGenerator.h"
 #include "generators/SerializationGenerator.h"
+#include "generators/RpcGenerator.h"
 
 Configuration::Configuration () {
 	mPredebug = false;
@@ -14,11 +15,14 @@ Configuration::Configuration () {
 	Generator * dumpGenerator = new DumpGenerator;
 	Generator * enumGenerator = new EnumGenerator;
 	Generator * serializationGenerator = new SerializationGenerator;
+	Generator * rpcGenerator = new RpcGenerator;
 	mGenerators["dump"] = dumpGenerator;
 	mGenerators["enum"] = enumGenerator;
 	mGenerators["sd"]   = serializationGenerator;
+	mGenerators["rpc"]  = rpcGenerator;
 	mDefaultGenerators.push_back (enumGenerator);
 	mDefaultGenerators.push_back (serializationGenerator);
+	mDefaultGenerators.push_back (rpcGenerator);
 }
 
 Configuration::~Configuration () {

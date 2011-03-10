@@ -38,6 +38,11 @@ namespace sf {
 #define SF_AUTOREFLECT_ENUM(X) \
 	SF_AUTOREFLECT_ENUM_TOFROMSTRING(X);
 
+#define SF_AUTOREFLECT_RPC \
+	const char * name () const;\
+	const char ** commands () const; \
+	bool handleRpc (const sf::HostId &, const sf::String & cmdName, const sf::Deserialization & header, const sf::ByteArray & data = sf::ByteArray());
+
 namespace sf {
 
 typedef unsigned long HashValue;

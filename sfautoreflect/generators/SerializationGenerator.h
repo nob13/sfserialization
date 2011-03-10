@@ -15,6 +15,10 @@ public:
 		return "Generates (de)serialization operators for sfserialization library";
 	}
 
+	/// Returns the command name for a type name (lowerCaseBegin)
+	/// (Used for getCmdName generation, if requested)
+	static std::string commandName (const std::string & typeName);
+
 protected:
 
 	// override

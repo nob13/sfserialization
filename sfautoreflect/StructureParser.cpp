@@ -258,7 +258,7 @@ const RootElement * StructureParser::root () const {
 		}
 	}
 	// Case 7 Function declaration
-	if (finishing == ';') {
+	if (finishing == ';' || finishing == '{') {
 		FunctionDeclarationElement * declaration = new FunctionDeclarationElement();
 		bool result = matchFunctionDeclaration (mIncomingLine.begin(), mIncomingLine.end(), declaration);
 		if (result) {
@@ -277,10 +277,12 @@ const RootElement * StructureParser::root () const {
 				// E.g. int bla () { X x ();} // must not declare x but can also declare an instance of (struct/class) X, called x.
 				// fprintf (stderr, "Matched a function declaration %s outside a class/root/namespace element, parent=%s\n", sf::toJSON (declaration).c_str(), sf::toJSON (*element).c_str());
 				delete declaration;
-				return true;
+				if (finishing != '{') // otherwise there is still a block
+					return true;
 			}
 		}
-		return true;
+		if (finishing != '{') // otherwise there is still a block
+			return true;
 	}
 
 	// Unknown block, starting

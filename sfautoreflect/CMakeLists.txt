@@ -20,6 +20,8 @@ set (reflect_files
 	"generators/EnumGenerator.cpp"
 	"generators/SerializationGenerator.h"
 	"generators/SerializationGenerator.cpp"
+	"generators/RpcGenerator.h"
+	"generators/RpcGenerator.cpp"
 )
 
 add_library (reflect ${reflect_files})

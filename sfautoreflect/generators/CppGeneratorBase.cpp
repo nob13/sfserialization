@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <sstream>
 #include "StaticHashTableBuilder.h"
+#include <assert.h>
 
 CppGeneratorBase::CppGeneratorBase () {
 	mOutput = stdout;
@@ -88,6 +89,7 @@ bool CppGeneratorBase::handleClassUp (const ClassElement * e) {
 }
 
 bool CppGeneratorBase::handleClassDown (const ClassElement * e) {
+	assert (!mClassScope.empty());
 	mClassScope.pop_back();
 	return true;
 }

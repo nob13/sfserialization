@@ -60,4 +60,5 @@ endmacro ()
 
 autoreflect_testcase (reflect_enum)
 autoreflect_testcase (reflect_struct)
+autoreflect_testcase (reflect_rpc)
 autoreflect_testcase (performance)

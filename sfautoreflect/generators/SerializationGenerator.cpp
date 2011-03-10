@@ -18,6 +18,13 @@ bool SerializationGenerator::generate (const RootElement * tree) {
 	return CppGeneratorBase::generate (tree);
 }
 
+/*static*/ std::string SerializationGenerator::commandName (const std::string & name){
+	std::string result = name;
+	result[0] = (char) tolower (name[0]);
+	return result;
+}
+
+
 bool SerializationGenerator::handleClassUp (const ClassElement * e) {
 	if (!CppGeneratorBase::handleClassUp (e)) return false;
 	bool serial   = e->commands.count ("SERIAL") > 0
@@ -80,15 +87,9 @@ bool SerializationGenerator::generateIsDefault (const ClassElement * element) {
 	return true;
 }
 
-static std::string lowerCaseBegin (const std::string & name){
-	std::string result = name;
-	result[0] = (char) tolower (name[0]);
-	return result;
-}
-
 bool SerializationGenerator::generateGetCmdName (const ClassElement * element) {
 	fprintf (mOutput, "const char* %sgetCmdName () {\n", classScope().c_str());
-	fprintf (mOutput, "\treturn \"%s\";\n", lowerCaseBegin (element->name).c_str());
+	fprintf (mOutput, "\treturn \"%s\";\n", commandName (element->name).c_str());
 	fprintf (mOutput, "}\n\n");
 	return true;
 }
