@@ -71,7 +71,7 @@ private:
 	static StringVec::const_iterator matchArgumentDefinition (StringVec::const_iterator begin, StringVec::const_iterator end, bool * result, ArgumentDefinition * definition);
 
 	/// Tries to match a function head
-	static bool matchFunctionDeclaration (StringVec::const_iterator begin, StringVec::const_iterator end, FunctionDeclarationElement * head);
+	static bool matchFunctionDeclaration (StringVec::const_iterator begin, StringVec::const_iterator end, FunctionDeclarationElement * declaration);
 
 	/// Pushing a structure element
 	void push (StackElement * elem);

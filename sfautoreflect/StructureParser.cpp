@@ -257,6 +257,26 @@ const RootElement * StructureParser::root () const {
 			}
 		}
 	}
+	// Case 7 Function declaration
+	if (finishing == ';') {
+		FunctionDeclarationElement * declaration = new FunctionDeclarationElement();
+		bool result = matchFunctionDeclaration (mIncomingLine.begin(), mIncomingLine.end(), declaration);
+		if (result) {
+			if (mDebug) printf ("Matched function declaration %s\n", sf::toJSON (declaration).c_str());
+			StackElement * element = mStack.top();
+			if (
+					(element->type == StackElement::Class)
+				 || (element->type == StackElement::Root)
+				 || (element->type == StackElement::Namespace)){
+				element->children.push_back (declaration);
+			} else {
+				delete element;
+				fprintf (stderr, "Matched a function declaration outside a class/root/namespace element\n");
+				return false;
+			}
+		}
+		return true;
+	}
 
 	// Unknown block, starting
 	if (finishing == '{'){
@@ -455,18 +475,18 @@ const RootElement * StructureParser::root () const {
 	return pos;
 }
 
-/*static*/ bool StructureParser::matchFunctionDeclaration (StringVec::const_iterator begin, StringVec::const_iterator end, FunctionDeclarationElement * head) {
+/*static*/ bool StructureParser::matchFunctionDeclaration (StringVec::const_iterator begin, StringVec::const_iterator end, FunctionDeclarationElement * declaration) {
 	// Consists of CppType NAME ( [Argument [,Argument]*] ) [const]
 	// 1. Return Value
 	bool suc;
-	StringVec::const_iterator pos = matchCppType (begin, end, &suc, &head->returnType);
+	StringVec::const_iterator pos = matchCppType (begin, end, &suc, &declaration->returnType);
 	if (!suc) {
 		return false;
 	}
 	if (pos == end) return false;
 	// 2. NAME
 	if (!isRegularIdentifier (*pos)) return false;
-	head->name = *pos;
+	declaration->name = *pos;
 	pos++;
 	if (pos == end) return false;
 	// 3. '('
@@ -479,7 +499,7 @@ const RootElement * StructureParser::root () const {
 		pos = matchArgumentDefinition (pos, end, &suc, &argument);
 		if (!suc)
 			return false;
-		head->arguments.push_back (argument);
+		declaration->arguments.push_back (argument);
 		if (*pos == ",") pos++;
 		else break;
 	}
@@ -488,7 +508,7 @@ const RootElement * StructureParser::root () const {
 	pos++;
 	if (pos == end) return true;
 	if (*pos == "const") {
-		head->const_ = true;
+		declaration->const_ = true;
 		pos++;
 		if (pos != end) return false;
 		return true;
@@ -602,6 +622,31 @@ static StructureParser::StringVec createStringVec (const std::string & all){
 			return false;
 		}
 	}
+	// Test 3 with reference
+	{
+		StringVec v = createStringVec ("std :: string &");
+		bool result;
+		CppType type;
+		StringVec::const_iterator i = matchCppType (v.begin(), v.end(), &result, &type);
+		if (!result || i != v.end()){
+			fprintf (stderr, "test_matchCppType3 failed: %d %s\n", result, sf::toJSON (type).c_str());
+			markPosition (v.begin(), v.end(), i);
+			return false;
+		}
+	}
+	// Test 4 const reference
+	{
+		StringVec v = createStringVec ("const std :: string & bla");
+		bool result;
+		CppType type;
+		StringVec::const_iterator i = matchCppType (v.begin(), v.end(), &result, &type);
+		if (!result || i != v.begin() + 5){
+			fprintf (stderr, "test_matchCppType4 failed: %d %s\n", result, sf::toJSON (type).c_str());
+			markPosition (v.begin(), v.end(), i);
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -717,6 +762,37 @@ static StructureParser::StringVec createStringVec (const std::string & all){
 		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
 		if (!result || element.name != "func" || element.returnType.name != "void" || element.const_ || element.arguments.size () != 2) {
 			fprintf (stderr, "test_matchFunctionDeclaration5 failed\n");
+			return false;
+		}
+	}
+	// Test6 complex return value
+	{
+		StringVec v = createStringVec ("const std :: string < char > & func ( const int & a , std :: vector < int > & b ) const");
+		FunctionDeclarationElement element;
+		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
+		if (!result || element.name != "func" || element.returnType.name != "std::string < char > &" || !element.returnType.const_ || element.arguments.size() != 2
+			|| element.arguments[0].type.name != "int &" || !element.arguments[0].type.const_ || element.arguments[1].type.name != "std::vector < int > &" || element.arguments[1].type.const_){
+			fprintf (stderr, "test_matchFunctionDeclaration6 failed: %d %s\n", result, sf::toJSON(element).c_str());
+			return false;
+		}
+	}
+	// Test 7 a function pointer
+	{
+		StringVec v = createStringVec ("int ( * MyFunction ) ( )");
+		FunctionDeclarationElement element;
+		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
+		if (result) {
+			fprintf (stderr, "test_matchFunctionDeclaration7 failed\n");
+			return false;
+		}
+	}
+	// Test 8 a c++ function pointer
+	{
+		StringVec v = createStringVec ("int ( MyClass :: * pointer ) ( )");
+		FunctionDeclarationElement element;
+		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
+		if (result) {
+			fprintf (stderr, "test_matchFunctionDeclaration8 failed\n");
 			return false;
 		}
 	}
