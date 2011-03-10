@@ -171,15 +171,20 @@ struct ArgumentDefinition {
 };
 
 struct FunctionDeclarationElement : public StackElement {
-	FunctionDeclarationElement () : StackElement (FunctionDeclaration), const_ (false) {}
+	FunctionDeclarationElement () : StackElement (FunctionDeclaration), visibility (Public), const_ (false), virtual_ (false), inline_(false) {}
+	Visibility visibility;				///< important only inside classes.
 	CppType returnType;					///< Also includes if function is static
 	std::vector<ArgumentDefinition> arguments;
 	bool const_;
+	bool virtual_;
+	bool inline_;
 	void serialize (sf::Serialization & s) const {
 		StackElement::serialize (s);
+		s ("visibility", visibility);
 		s ("returnType", returnType);
 		s ("arguments", arguments);
 		s ("const", const_);
+		s ("inline", inline_);
 	}
 };
 

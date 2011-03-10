@@ -264,6 +264,9 @@ const RootElement * StructureParser::root () const {
 		if (result) {
 			if (mDebug) printf ("Matched function declaration %s\n", sf::toJSON (declaration).c_str());
 			StackElement * element = mStack.top();
+			if (element->type == StackElement::Class)
+				declaration->visibility = (static_cast<ClassElement*> (element))->currentVisibility;
+
 			if (
 					(element->type == StackElement::Class)
 				 || (element->type == StackElement::Root)
@@ -476,7 +479,14 @@ const RootElement * StructureParser::root () const {
 }
 
 /*static*/ bool StructureParser::matchFunctionDeclaration (StringVec::const_iterator begin, StringVec::const_iterator end, FunctionDeclarationElement * declaration) {
-	// Consists of CppType NAME ( [Argument [,Argument]*] ) [const]
+	// Consists of [virtual] CppType NAME ( [Argument [,Argument]*] ) [const]
+	// 0. virtual/inline
+	while (true) {
+		if (begin == end) return false;
+		if (*begin == "virtual") { declaration->virtual_ = true; begin++; continue; }
+		if (*begin == "inline")  { declaration->inline_  = true; begin++; continue; }
+		break;
+	}
 	// 1. Return Value
 	bool suc;
 	StringVec::const_iterator pos = matchCppType (begin, end, &suc, &declaration->returnType);
@@ -793,6 +803,26 @@ static StructureParser::StringVec createStringVec (const std::string & all){
 		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
 		if (result) {
 			fprintf (stderr, "test_matchFunctionDeclaration8 failed\n");
+			return false;
+		}
+	}
+	// Test 9 a virtual function
+	{
+		StringVec v = createStringVec ("virtual int bla ( )");
+		FunctionDeclarationElement element;
+		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
+		if (!result || !element.virtual_) {
+			fprintf (stderr, "test_matchFunctionDeclaration9 failed\n");
+			return false;
+		}
+	}
+	// Test 10 a inline function
+	{
+		StringVec v = createStringVec ("inline int bla ( )");
+		FunctionDeclarationElement element;
+		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
+		if (!result || !element.inline_) {
+			fprintf (stderr, "test_matchFunctionDeclaration10 failed\n");
 			return false;
 		}
 	}
