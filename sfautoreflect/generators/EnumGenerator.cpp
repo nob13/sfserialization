@@ -85,59 +85,22 @@ bool EnumGenerator::generateToString (const EnumElement * element) {
 bool EnumGenerator::generateFromString (const EnumElement * element) {
 	std::string enumName = classScope () + element->name;
 
-	fprintf (mOutput, "bool fromString (const char* s, %s &e){\n", enumName.c_str());
+	fprintf (mOutput, "bool fromString (const char* key, %s &e){\n", enumName.c_str());
 	if (!element->values.empty()){
 
 		// Generating Hash Table
 		StaticHashTableBuilder generator;
 		for (EnumElement::ValueVec::const_iterator i = element->values.begin(); i != element->values.end(); i++){
-			generator.add(i->first);
+			generator.add(i->first, classScope() + i->first);
 		}
 		typedef StaticHashTableBuilder::HashTable HashTable;
-		HashTable table;
-		int mod = generator.calcBestModulus();
-		generator.calcHashTable(mod, &table);
-
-
-		// Lookup structure
-		fprintf (mOutput, "\t// using a hash table\n");
-		fprintf (mOutput, "\t// lookup structure\n");
-		fprintf (mOutput, "\tconst int hashTable[] = {0");
-		int current = table[0].size() + 1; // + null element
-		for (int i = 1; i < mod; i++) {
-			fprintf (mOutput, ", %d", current);
-			current+=table[i].size() + 1;
+		bool suc = generator.generateHashCode(mOutput, enumName.c_str());
+		if (!suc){
+			fprintf (stderr, "StaticHashTableBuilder failed\n");
+			return false;
 		}
-		fprintf (mOutput, "};\n");
-
-		// Table
-		fprintf (mOutput, "\t// hash table\n");
-		fprintf (mOutput, "\tstruct HashEntry { const char * name; %s value; };\n", enumName.c_str());
-		fprintf (mOutput, "\tconst HashEntry entries[] = {\n");
-		bool first = true;
-		for (HashTable::const_iterator i = table.begin(); i != table.end(); i++){
-			for (std::vector<std::string>::const_iterator j = i->begin(); j != i->end(); j++) {
-				fprintf (mOutput, "\t\t");
-				if (!first) { fprintf (mOutput, ","); }
-				first = false;
-				fprintf (mOutput, "{\"%s\", %s%s}\n", j->c_str(), classScope().c_str(), j->c_str());
-			}
-			fprintf (mOutput, "\t\t");
-			if (!first) { fprintf (mOutput, ","); }
-			first = false;
-			fprintf (mOutput, "{0, %s()}\n", enumName.c_str());
-		}
-		fprintf (mOutput, "\t};\n");
-
-		// Lookup function
-		fprintf (mOutput, "\t// lookup\n");
-		fprintf (mOutput, "\tint key = sf::hash ((unsigned char*)s) %% %d;\n", mod);
-		fprintf (mOutput, "\tconst HashEntry * entry = entries + hashTable[key];\n");
-		fprintf (mOutput, "\twhile (entry->name != 0){\n");
-		fprintf (mOutput, "\t\tif(strcmp (entry->name, s) == 0) {e = entry->value; return true; }\n");
-		fprintf (mOutput, "\t\tentry++;\n");
-		fprintf (mOutput, "\t}\n");
-		fprintf (mOutput, "\t// not found\n");
+		fprintf (mOutput, "\tif (foundKey) { e = value; return true; }\n");
+		fprintf (mOutput, "\t// did not found key\n");
 	}
 	fprintf (mOutput, "\treturn false;\n");
 	fprintf (mOutput, "}\n\n");

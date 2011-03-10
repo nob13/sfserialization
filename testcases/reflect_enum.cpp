@@ -13,6 +13,34 @@ bool checkFromString (const std::string & s, E e){
 	return false;
 }
 
+template <class X>
+bool testToAndFrom (X x) {
+	X back;
+	bool suc = fromString (toString (x), back);
+	if (!suc) return false;
+	return (x == back);
+}
+
+bool testBitEnum () {
+	if (!testToAndFrom (Bit0)) return false;
+	if (!testToAndFrom (Bit1)) return false;
+	if (!testToAndFrom (Bit2)) return false;
+	if (!testToAndFrom (Bit3)) return false;
+	if (!testToAndFrom (Bit4)) return false;
+	if (!testToAndFrom (Bit5)) return false;
+	if (!testToAndFrom (Bit6)) return false;
+	if (!testToAndFrom (Bit7)) return false;
+	if (!testToAndFrom (Bit8)) return false;
+	if (!testToAndFrom (Bit9)) return false;
+	if (!testToAndFrom (Bit10)) return false;
+	if (!testToAndFrom (Bit11)) return false;
+	if (!testToAndFrom (Bit12)) return false;
+	if (!testToAndFrom (Bit13)) return false;
+	if (!testToAndFrom (Bit14)) return false;
+	if (!testToAndFrom (Bit15)) return false;
+	return true;
+}
+
 int main (int argc, char * argv[]){
 	printf ("%s %s %s %s\n", toString (Alpha), toString (Beta), toString (Gamma), toString (Delta));
 	
@@ -40,6 +68,8 @@ int main (int argc, char * argv[]){
 	tassert (sf::isDefault (TestEmptyEnum()));
 
 	tassert (sf::isDefault (Bla::A));
+
+	tassert (testBitEnum());
 
 	return 0;
 }
