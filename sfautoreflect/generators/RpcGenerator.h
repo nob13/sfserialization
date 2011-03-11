@@ -23,7 +23,7 @@ public:
 
 	virtual const char * name () const { return "RPCGenerator"; }
 	virtual const char * desc () const { return
-			"EXPERIMENTAL! Generates helper function for JSON-RPC capable objects like being used in schneeflocke library.";
+			"Generates helper function for JSON-RPC capable objects like being used in schneeflocke library.";
 	}
 
 protected:

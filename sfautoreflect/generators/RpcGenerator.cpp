@@ -45,14 +45,10 @@ bool RpcGenerator::handleClassUp (const ClassElement * e) {
 
 	// Generate commands ()
 	fprintf (mOutput, "const char * g%s_commands[] = {\n", e->name.c_str());
-	bool first = true;
 	for (RpcFuncVector::const_iterator i = rpcFuncs.begin(); i != rpcFuncs.end(); i++) {
-		fprintf (mOutput, "\t");
-		if (!first) fprintf (mOutput, ", ");
-		first = false;
-		fprintf (mOutput, "\"%s\"\n", SerializationGenerator::commandName (*i).c_str());
+		fprintf (mOutput, "\t\"%s\",\n", SerializationGenerator::commandName (*i).c_str());
 	}
-	fprintf (mOutput, "};\n\n");
+	fprintf (mOutput, "\t0\n};\n\n");
 	fprintf (mOutput, "const char ** %scommands () const {\n", classScope().c_str());
 	fprintf (mOutput, "\treturn g%s_commands;\n", e->name.c_str());
 	fprintf (mOutput, "}\n\n");
