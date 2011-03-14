@@ -524,11 +524,13 @@ const RootElement * StructureParser::root () const {
 	if (*pos == "const") {
 		declaration->const_ = true;
 		pos++;
-		if (pos != end) return false;
-		return true;
-	} else {
-		return false;
 	}
+	if (pos == end) return true;
+	if (*pos == "=" && ((pos + 1) != end) && *(pos + 1) == "0"){
+		declaration->abstract = true;
+		pos += 2;
+	}
+	return pos == end;
 }
 
 void StructureParser::push (StackElement * elem) {
@@ -830,6 +832,17 @@ static StructureParser::StringVec createStringVec (const std::string & all){
 			return false;
 		}
 	}
+	// Test 11 an abstract function
+	{
+		StringVec v = createStringVec ("virtual int bla ( ) = 0");
+		FunctionDeclarationElement element;
+		bool result = matchFunctionDeclaration (v.begin(), v.end(), &element);
+		if (!result || !element.abstract || !element.virtual_) {
+			fprintf (stderr, "test_matchFunctionDeclaration11 failed\n");
+			return false;
+		}
+	}
+
 
 	return true;
 }
