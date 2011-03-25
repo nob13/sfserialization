@@ -76,7 +76,7 @@ void Serialization::insertKey (const char * key) {
 		for (int i = 0; i < mIndentation; i++) cacheAppend ("  ");
 	}
 	
-	addString (key);
+	addString (key, !mCompact);
 	cacheAppend (':');
 	mNeedComma = false;
 }
@@ -115,8 +115,8 @@ void Serialization::cacheAppend (const char c){
 }
 
 
-void Serialization::addString (const char * s){
-	cacheAppend ('"');
+void Serialization::addString (const char * s, bool quoted){
+	if (quoted) cacheAppend ('"');
 	for (const char *i = s; *i != 0; i++){
 		switch (*i){
 			case '\\': cacheAppend ("\\\\"); break;
@@ -126,7 +126,7 @@ void Serialization::addString (const char * s){
 		default: cacheAppend (*i);
 		}
 	}
-	cacheAppend ('"');
+	if (quoted) cacheAppend ('"');
 }
 
 void serialize (Serialization & s, int32_t data) {

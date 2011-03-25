@@ -33,13 +33,15 @@ public:
 	 * @param target         where the JSON code will go
 	 * @param compress       compress the output (only serialize objects, which are not default values)
 	 * @param indent         do some nice indentation
+	 * @param compact        skip quotes on keys (illegal JSON!)
 	 */
-	inline Serialization (std::string & target, bool compress = false, bool indent = false) :
+	inline Serialization (std::string & target, bool compress = false, bool indent = false, bool compact = false) :
 		mTarget (target), 
 		mNeedComma (false), 
 		mIndent (indent),
 		mIndentation (0),
 		mCompress (compress),
+		mCompact (compact),
 		mFillness (0) { }
 	inline ~Serialization (){ flush (); }
 	
@@ -57,7 +59,7 @@ public:
 	
 	/// Insert a control character (must be '[', '{', '}', '])
 	void insertControlChar (char c);
-	/// Insert a key name (afterwards it will wait for a value)S
+	/// Insert a key name (afterwards it will wait for a value)
 	void insertKey         (const char * key);
 	/// Insert command name (should be done only before doing everything else)
 	/// Note: not JSON standard compatible
@@ -90,8 +92,8 @@ private:
 	void cacheAppend (const char * s);
 	void cacheAppend (const char c);
 	
-	/// Adds a string to the cache with escape symbols and begin/end " .. "
-	void addString (const char * c);
+	/// Adds a string to the cache with escape symbols and begin/end " .. " (if quoted == true)
+	void addString (const char * c, bool quoted = true);
 	std::string & mTarget;
 	bool mNeedComma;		///< Next one needs a comma
 	
@@ -99,6 +101,7 @@ private:
 	int  mIndentation;		///< current indentation level
 	
 	bool mCompress;			///< Only serialize values which are different to isDefault()
+	bool mCompact;			///< Skip quotes on keys
 	
 	int mFillness;			
 	char mCache[512];	
@@ -127,6 +130,7 @@ template <class T> std::string toJSONCmd (const T & obj){
 enum SerializationFlags {
 	COMPRESS = 0x1,		///< Compress (omits values which are default values)
 	INDENT   = 0x4,		///< Indent the output (for better human readability)
+	COMPACT  = 0x8,		///< Skip quotes on keys (shorter, but illegal JSON)
 };
 
 /// Converts a given object to JSON, you can control wether to compress, to start with name (command mode) or to indent.
@@ -135,7 +139,8 @@ template <class T> std::string toJSONEx (const T & obj, int flags) {
 	std::string target;
 	bool compress = flags & COMPRESS;
 	bool indent   = flags & INDENT;
-	Serialization serialization (target, compress, indent);
+	bool compact  = flags & COMPACT;
+	Serialization serialization (target, compress, indent, compact);
 	serialize (serialization, obj); // koenig lookup
 	serialization.flush();
 	return target;
