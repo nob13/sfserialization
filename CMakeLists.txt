@@ -1,9 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (sfserialization)
 enable_testing ()
-
 # set (CMAKE_VERBOSE_MAKEFILE ON)
-
 
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE "DEBUG")
@@ -54,6 +52,17 @@ set (LIBS "reflect" ${LIBS})
 
 # Test Cases
 add_subdirectory (testcases)
+
+# Packaging Settings
+if (WIN32)
+	SET(CPACK_GENERATOR "ZIP")
+else()
+	SET(CPACK_SOURCE_GENERATOR "TGZ")
+	SET(CPACK_GENERATOR "TGZ")
+endif()
+set (CPACK_PACKAGE_VERSION "")
+include (CPack)
+message (STATUS "Generators: ${CPACK_GENERATOR}")
 
 # Uninstall Target
 # (HAS BUGS; Does not delete the directories itself)
