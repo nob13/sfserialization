@@ -21,7 +21,7 @@ double microtime (){
 	// is in 100nano-seconds intervals...
 	static int64_t first = full;
 	int64_t use = (full - first);
-	return (double) (use / 10);
+	return (use / 10000000.0);
 #else
 	struct timeval t;
 	gettimeofday (&t, 0);
