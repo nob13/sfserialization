@@ -86,6 +86,32 @@ struct Externizable : SubType {
 	std::vector<int> array;
 };
 
+bool plainSerialization () {
+	// Serialization / Deserialization of plain types.
+	{
+		int x = 5;
+		std::string s = sf::toJSON (x);
+		int y = 0;
+		bool suc = sf::fromJSON (s, y);
+		printf ("Sux=%d x=%d y=%d\n", suc, x, y);
+		tassert (suc && (x == y));
+	}
+	{
+		std::vector<int> x; x.push_back (3); x.push_back (4);
+		std::string s = sf::toJSON(x);
+		std::vector<int> y;
+		bool suc = sf::fromJSON (s, y);
+		tassert (suc && (x == y));
+	}
+	{
+		std::string x = "Its a tricky\nString\"";
+		std::string s = sf::toJSON (x);
+		std::string y;
+		bool suc = sf::fromJSON (s, y);
+		tassert (suc && (x == y));
+	}
+	return true;
+}
 
 int main (int argc, char * argv[]){
 	Externizable e;
@@ -98,6 +124,8 @@ int main (int argc, char * argv[]){
 	printf ("Deserializing\n");
 	bool ret = e.deserialize (s);
 	tassert (ret, "Shall deserialize");
+
+	RUN (plainSerialization());
 
 	return 0;
 }

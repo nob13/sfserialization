@@ -212,7 +212,6 @@ static bool parseNumber (const char * text, int maxLength, int * length, bool * 
 			return false; // invalid character
 		}
 	}
-	if (i == maxLength) return false; // end of text
 	*isFloatingPoint = (hadE || hadPoint);
 	*length = i;
 	return began;
