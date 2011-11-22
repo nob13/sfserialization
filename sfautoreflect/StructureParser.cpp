@@ -438,7 +438,7 @@ const RootElement * StructureParser::root () const {
 	if (id.empty()) return false;
 	if (isdigit(id[0])) return false; // identifiers may not start with numbers
 	for (std::string::const_iterator i = id.begin(); i != id.end(); i++){
-		if (!isalnum(*i)) return false; // may only contain alpha numerical characters
+		if (!isalnum(*i) && *i != '_') return false; // may only contain alpha numerical and '_' characters
 	}
 	return true;
 }
@@ -724,6 +724,16 @@ static StructureParser::StringVec createStringVec (const std::string & all){
 		bool result = matchVariableDefinition (v.begin(), v.end(), &d);
 		if (result){
 			fprintf (stderr, "test_matchVariableDefinition6 failed: %s\n", sf::toJSON(d).c_str());
+			return false;
+		}
+	}
+	// Test 7 Variable names may also contains '_' (regression)
+	{
+		StringVec v = createStringVec ("int bla_");
+		VariableDefinition d;
+		bool result = matchVariableDefinition (v.begin(), v.end(), &d);
+		if (!result || d.name != "bla_" || d.type.name != "int") {
+			fprintf (stderr, "test_matchVariableDefinition7 failed, %s\n", sf::toJSON(d).c_str());
 			return false;
 		}
 	}
