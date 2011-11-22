@@ -82,7 +82,7 @@ bool Configuration::parse (int argc, char * argv[]){
 
 /// Prints out mHelp info
 void Configuration::printInfo () {
-	printf ("sfautoreflect 0.1\n");
+	printf ("sfautoreflect 0.2.4\n");
 	if (mVersion){
 		return;
 	}
