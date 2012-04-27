@@ -217,7 +217,6 @@ static bool parseNumber (const char * text, int maxLength, int * length, bool * 
 	return began;
 }
 
-
 bool Value::fetch (std::string & string, bool doDecoding, bool * decodedSuccessfull) const {
 	if (mType == StringType){
 
@@ -294,7 +293,6 @@ bool Value::fetch (Array & array) const {
 	return !array.error();
 }
 
-
 bool Value::numFetch (int64_t & data) const {
 	if(mType == IntType) {
 		data = iData;
@@ -303,6 +301,26 @@ bool Value::numFetch (int64_t & data) const {
 	if(mType == FloatType) {
 		data = (int64_t) fData;
 		return true;
+	}
+	if (mType == StringType) {
+		int len;
+		bool isFloat;
+		if (mLength >= 2 && parseNumber (mData + 1, mLength - 2, &len, &isFloat)){
+			errno = 0; // maybe tainted (it has happend!)
+			if (isFloat){
+				double f = strtod (mData + 1, NULL);
+				if (!errno) {
+					data = (int64_t) f;
+				}
+			} else {
+				int64_t i = strtol (mData+ 1, NULL, 10);
+				if (!errno) {
+					data = i;
+				}
+			}
+			return !errno; // error on conversion
+		}
+		return false; // not a number
 	}
 	return false;
 }
@@ -315,6 +333,26 @@ bool Value::numFetch (double & data) const {
 	if(mType == FloatType) {
 		data = fData;
 		return true;
+	}
+	if (mType == StringType) {
+		int len;
+		bool isFloat;
+		if (mLength >= 2 && parseNumber (mData + 1, mLength - 1, &len, &isFloat)){
+			errno = 0; // maybe tainted (it has happend!)
+			if (isFloat){
+				double f = strtod (mData + 1, NULL);
+				if (!errno){
+					data = f;
+				}
+			} else {
+				int64_t i = strtol (mData+ 1, NULL, 10);
+				if (!errno) {
+					data = (double) i;
+				}
+			}
+			return !errno; // error on conversion
+		}
+		return false; // not a number
 	}
 	return false;
 }

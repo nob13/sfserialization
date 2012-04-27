@@ -35,25 +35,35 @@ template <typename T>
 /// Reads int32 value from the item
 /// @return true on success
 inline bool deserialize (const json::Value & v, int32_t & i){
-	return v.fetch(i);
+	int64_t x;
+	bool suc = v.numFetch (x);
+	if (suc) {
+		i = x;
+	}
+	return suc;
 }
 
 /// Reads int64 value from the item
 /// @return true on success
 inline bool deserialize (const json::Value & v, int64_t & i){
-	return v.fetch(i);
+	return v.numFetch(i);
 }
 
 /// Reads float value from the item
 /// @return true on success
 inline bool deserialize (const json::Value & v, float & f){
-	return v.fetch(f);
+	double x;
+	bool suc = v.numFetch(x);
+	if (suc) {
+		f = x;
+	}
+	return suc;
 }
 
 /// Reads double value from the item
 /// @return true on success
 inline bool deserialize (const json::Value & v, double & d){
-	return v.fetch(d);
+	return v.numFetch(d);
 }
 
 /// Reads std::string value from item

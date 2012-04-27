@@ -84,11 +84,11 @@ public:
 	/// @return whether type was Ok and the array was successfully parsed
 	bool fetch (Array & array) const;
 
-	/// Fetches an numerical type (do not cars about int/float)
+	/// Fetches an numerical type (do not cars about int/float/string)
 	/// @return whether type was Ok
 	bool numFetch (int64_t & data) const;
 
-	/// Fetches an numerical type (do not cars about int/float)
+	/// Fetches an numerical type (do not cars about int/float/string)
 	/// @return whether type was Ok
 	bool numFetch (double & data) const;
 
