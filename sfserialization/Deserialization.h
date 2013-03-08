@@ -15,7 +15,11 @@ class hasDeserialize
     typedef char one;
     typedef long two;
 
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+    template <typename C> static one test( decltype(&C::deserialize) ) ;
+#else
     template <typename C> static one test( typeof(&C::deserialize) ) ;
+#endif
     template <typename C> static two test(...);
 
 public:
