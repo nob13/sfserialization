@@ -3,6 +3,7 @@
 #include "JSONParser.h"
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_enum.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace sf {
 class Deserialization;
@@ -120,15 +121,15 @@ template <class T> bool deserialize (const json::Value & v, std::vector<T> & vec
 }
 
 /// Fetches all keys into a map
-template <class T> bool deserialize (const json::Value & v, std::map<std::string, T> & dst) {
+template <typename A, typename B> bool deserialize (const json::Value & v, std::map<A, B> & dst) {
 	json::Object o;
 	if (!v.fetch(o)) return false;
 	dst.clear ();
 	const json::Entry * e = o.first ();
 	while (e) {
-		T t;
+		B t;
 		if (!deserialize (e->value(), t)) return false;
-		dst[e->name()] = t;
+		dst[boost::lexical_cast<A>(e->name())] = t;
 		e = e->next ();
 	}
 	return true;

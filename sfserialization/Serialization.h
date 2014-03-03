@@ -3,6 +3,7 @@
 #include "isdefault.h"
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_enum.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace sf {
 class Serialization;
@@ -177,11 +178,11 @@ template <class T> static void serialize (sf::Serialization &s, const std::vecto
 }
 
 /// Serialize method for maps
-template <class T> void serialize (Serialization & s, const std::map<std::string, T> & data) {
+template <typename A, typename B> void serialize (Serialization & s, const std::map<A, B> & data) {
 	s.insertControlChar('{');
-	for (typename std::map<std::string, T>::const_iterator i = data.begin(); i != data.end(); i++) {
-		s.insertKey (i->first.c_str());
-		serialize (s, i->second);
+	for (typename std::map<A, B>::const_iterator i = data.begin(); i != data.end(); i++) {
+		    s.insertKey (boost::lexical_cast<std::string>(i->first).c_str());
+		    serialize (s, i->second);
 	}
 	s.insertControlChar('}');
 }
