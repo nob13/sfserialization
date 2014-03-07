@@ -604,7 +604,7 @@ static StructureParser::StringVec createStringVec (const std::string & all){
 		StringVec v = createStringVec ("std :: vector < < std :: astring > notInType");
 		// missing '>'
 		bool result;
-		StringVec::const_iterator i = matchTypeName (v.begin(), v.end(), &result);
+		/*StringVec::const_iterator i = */ matchTypeName (v.begin(), v.end(), &result);
 		if (result){
 			fprintf (stderr, "test_matchTypeName4 failed\n");
 			return false;

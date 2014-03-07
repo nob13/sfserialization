@@ -33,6 +33,28 @@ template <class T> static void myItoa (T v, char * result, int base){
 		p--;
 	}
 }
+	
+/// Own rewrite of itoa for decimal numbers (unsigned version)
+template <class T> static void myItoaUnsigned (T v, char * result, int base){
+	char * p = result;
+	do {
+		int x = v % base;
+		v /= base;
+		*p = "0123456789abcdefgh" [x];
+		p++;
+	} while (v);
+	*p = '\0';
+	p--;
+	char * s = result;
+	while (s < p){
+		char t = *s;
+		*s = *p;
+		*p = t;
+		s++;
+		p--;
+	}
+}
+	
 
 void Serialization::sizeHint (size_t size){
 	mTarget.reserve (mTarget.size() + size);
@@ -143,13 +165,13 @@ void serialize (Serialization & s, int64_t data) {
 
 void serialize (Serialization & s, uint32_t data) {
 	char buf [16];
-	myItoa (data, buf, 10);
+	myItoaUnsigned (data, buf, 10);
 	s.insertValue (buf);
 }
 
 void serialize (Serialization & s, uint64_t data) {
 	char buf [32];
-	myItoa (data, buf, 10);
+	myItoaUnsigned (data, buf, 10);
 	s.insertValue (buf);
 }
 
