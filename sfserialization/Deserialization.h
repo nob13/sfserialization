@@ -129,7 +129,13 @@ template <typename A, typename B> bool deserialize (const json::Value & v, std::
 	while (e) {
 		B t;
 		if (!deserialize (e->value(), t)) return false;
-		dst[boost::lexical_cast<A>(e->name())] = t;
+		A key;
+		try {
+			key = boost::lexical_cast<A>(e->name());
+		} catch (boost::bad_lexical_cast & exception) {
+			return false;
+		}
+		dst[key] = t;
 		e = e->next ();
 	}
 	return true;

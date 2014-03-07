@@ -103,6 +103,33 @@ bool testPrivateAvoidance2 () {
 	return true;
 }
 
+bool testMapWithIntKey() {
+	my::MapWithIntKey testMap;
+	testMap.values[3] = "Hello World";
+	std::string json = sf::toJSON(testMap);
+	std::string expected = "{\"values\":{\"3\":\"Hello World\"}}";
+	bool suc = (json == expected);
+	if (!suc) {
+		fprintf(stderr, "Could not serialize map with int as key, got %s instead of %s\n", json.c_str(), expected.c_str());
+		return false;
+	}
+	my::MapWithIntKey back;
+	suc = sf::fromJSON(json, back);
+	if (!suc) {
+		fprintf(stderr, "Could not serialize map with int key back\n");
+		return false;
+	}
+	// Error Handling on invalid JSON.
+	std::string jsonWithBadKey = "{\"values\":{\"A\":\"Hello World\"}}"; // "A" doesn't fit into int
+	my::MapWithIntKey back2;
+	suc = sf::fromJSON(jsonWithBadKey, back2);
+	if (suc) {
+		fprintf(stderr, "Should detect bad deserialization, got %s from %s", sf::toJSON(back2).c_str(), jsonWithBadKey.c_str());
+		return false;
+	}
+	return true;
+}
+
 int main (int argc, char * argv[]) {
 	my::Base     b;
 	my::Derived  d;
@@ -134,6 +161,7 @@ int main (int argc, char * argv[]) {
 	RUN (testCyclus());
 	RUN (testPrivateAvoidance1());
 	RUN (testPrivateAvoidance2());
+	RUN (testMapWithIntKey());
 	
 	return 0;
 }

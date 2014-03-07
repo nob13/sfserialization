@@ -56,6 +56,11 @@ public:
 	SF_AUTOREFLECT_SD;
 };
 
+struct MapWithIntKey {
+	std::map<int, std::string> values;
+	SF_AUTOREFLECT_SD;
+};
+	
 
 }
 
