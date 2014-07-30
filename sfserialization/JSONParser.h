@@ -116,6 +116,9 @@ public:
 	/// Returns error state (means invalid type)
 	bool error () const { return mType == InvalidType; }
 
+        /// Returns JSON source for the value as string
+        const std::string str() const { return std::string(mData, mLength); }
+
 private:
 	friend class Object;
 	friend class Array;
