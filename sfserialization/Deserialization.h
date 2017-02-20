@@ -199,8 +199,7 @@ public:
 	Deserialization (const sf::json::Object& o);
 
 	/// Access one key and saves it in value
-	/// If not found it does either return an error
-	/// or use the default value for a given type (if setUseDefaultValue is set to true)
+	/// If it's not found it will use the default value
 	/// @return true on success
 	template <class T> bool operator() (const char * key, T & value) const {
 		json::Value v = mObject.get(key);
