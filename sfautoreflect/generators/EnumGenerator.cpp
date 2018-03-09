@@ -93,7 +93,6 @@ bool EnumGenerator::generateFromString (const EnumElement * element) {
 		for (EnumElement::ValueVec::const_iterator i = element->values.begin(); i != element->values.end(); i++){
 			generator.add(i->first, classScope() + i->first);
 		}
-		typedef StaticHashTableBuilder::HashTable HashTable;
 		bool suc = generator.generateHashCode(mOutput, enumName.c_str());
 		if (!suc){
 			fprintf (stderr, "StaticHashTableBuilder failed\n");
