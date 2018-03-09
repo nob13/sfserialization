@@ -82,11 +82,11 @@ bool Configuration::parse (int argc, char * argv[]){
 
 /// Prints out mHelp info
 void Configuration::printInfo () {
-	printf ("sfautoreflect 0.2.5\n");
+	printf ("sfautoreflect 0.2.7\n");
 	if (mVersion){
 		return;
 	}
-	fprintf (stderr, "Copyright 2011-2012 Norbert Schultz\n");
+	fprintf (stderr, "Copyright Norbert Schultz\n");
 	fprintf (stderr, "Usage: sfautoreflect HEADER_FILE [-o OUTPUT_FILE] [-g Generator] [OPTIONS]\n");
 	fprintf (stderr, "Automated tool for generating C++ meta information\n");
 	fprintf (stderr, " -v Prints version number\n");
