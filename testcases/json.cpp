@@ -76,7 +76,11 @@ void jsonParserTest () {
 		checkParser (test1);
 		sf::json::Object parser (test1);
 		tassert ((!parser.error()), "Should not give an error");
-		
+
+    tassert(parser.get("name").str() == "\"nosc\"");
+    tassert(parser.get("number1").str() == "13");
+    tassert(parser.get("arraytype").str() == "[3,5,2,-34,\"text\", {\"id\":null\t, \"stringtype\":\"this is a nice string with heavy quotes \\\"}]\"}]");
+
 		checkField (parser, "number1", 13);
 		checkField (parser, "number2", -23.49e39);
 		checkField (parser, "booleantype", true);
@@ -108,6 +112,7 @@ void jsonParserTest () {
 		checkField (arr, 4, std::string ("text"));
 		tassert ((arr.get(5).type() == sf::json::ObjectType), "Wrong type");
 
+
 	}
 	{
 		// Empty objects
@@ -133,6 +138,8 @@ void jsonParserTest () {
 		bool suc = parser.get ("emptyString").fetch(s);
 		tassert (suc);
 		tassert (s.empty());
+
+		tassert(emptyString.str() == "");
 	}
 
 	{
